@@ -9,13 +9,15 @@ error FundMe__NotOwner();
 
 error FundMe__CallFailed();
 
+error FundMe__BelowMin();
+
 contract FundMe {
     using PriceConverter for uint256;
 
     uint256 public constant MIN_USD = 50 * 10 ** 18;
 
-    address[] public funders;
-    mapping(address => uint256) public fundersToFunds;
+    address[] public s_funders;
+    mapping(address => uint256) public s_fundersToFunds;
 
     address public immutable i_owner;
 
@@ -41,19 +43,18 @@ contract FundMe {
 
     function fund() public payable {
         uint256 value = msg.value;
-        require(
-            value.getConversionRate(i_priceFeed) >= MIN_USD,
-            "min funding is 50 USD"
-        );
-        funders.push(msg.sender);
-        fundersToFunds[msg.sender] += value;
+        if (value.getConversionRate(i_priceFeed) < MIN_USD)
+            revert FundMe__BelowMin();
+        s_funders.push(msg.sender);
+        s_fundersToFunds[msg.sender] += value;
     }
 
     function withdraw() public payable onlyOwner {
+        address[] memory funders = s_funders;
         for (uint256 i = 0; i < funders.length; i++) {
-            fundersToFunds[funders[i]] = 0;
+            s_fundersToFunds[funders[i]] = 0;
         }
-        funders = new address[](0);
+        s_funders = new address[](0);
 
         (bool sent, ) = payable(msg.sender).call{value: address(this).balance}(
             ""

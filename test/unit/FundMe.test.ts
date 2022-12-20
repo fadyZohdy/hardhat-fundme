@@ -24,16 +24,19 @@ describe("FundMe", async () => {
 
   describe("fund", async () => {
     it("fails if you don't send enough eth", async () => {
-      await expect(fundMe.fund()).to.be.revertedWith("min funding is 50 USD");
+      await expect(fundMe.fund()).to.be.revertedWithCustomError(
+        fundMe,
+        "FundMe__BelowMin"
+      );
     });
 
     it("succeeds if you send more than min and updates state", async () => {
       await fundMe.fund({ value: sendAmount });
 
-      const funder = await fundMe.funders("0");
+      const funder = await fundMe.s_funders("0");
       assert.equal(funder, deployer);
 
-      const funds = await fundMe.fundersToFunds(funder);
+      const funds = await fundMe.s_fundersToFunds(funder);
       assert.equal(funds.toString(), sendAmount.toString());
     });
   });
