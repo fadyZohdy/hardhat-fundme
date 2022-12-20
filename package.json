@@ -1,8 +1,13 @@
 {
   "name": "hardhat-fundme",
+  "author": "Fady Zohdy",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "test": "yarn hardhat test",
+    "lint": "yarn solhint 'contracts/*.sol'"
+  },
   "devDependencies": {
     "@chainlink/contracts": "^0.5.1",
     "@ethersproject/abi": "^5.4.7",
@@ -22,6 +27,7 @@
     "hardhat": "^2.12.3",
     "hardhat-deploy": "^0.11.22",
     "hardhat-gas-reporter": "^1.0.8",
+    "solhint": "^3.3.7",
     "solidity-coverage": "^0.8.0",
     "ts-node": ">=8.0.0",
     "typechain": "^8.1.0",
